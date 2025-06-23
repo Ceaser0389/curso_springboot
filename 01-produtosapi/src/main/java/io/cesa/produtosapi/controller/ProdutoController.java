@@ -41,7 +41,17 @@ public class ProdutoController {
     produtoRepository.deleteById(id);
   }
 
+  @PutMapping("{id}")
+  public void atulizar(@PathVariable("id") String id,
+                       @RequestBody Produto produto){
+    produto.setId(id);
+    produtoRepository.save(produto);
+  }
 
+  @GetMapping
+  public List<Produto> buscar( @RequestParam("nome") String nome){
+      return  produtoRepository.findByNome(nome);
+  }
 
 
 }
