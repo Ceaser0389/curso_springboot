@@ -25,3 +25,7 @@ create table livro(
 
 
 select * from livro ;
+
+
+drop table livro;
+drop table autor;

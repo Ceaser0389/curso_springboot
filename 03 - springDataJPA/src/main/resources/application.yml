@@ -6,3 +6,7 @@ spring:
     username: postgres
     password: pc1989
     driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql : true
+    hibernate:
+      ddl-auto: update, node, create-drop
