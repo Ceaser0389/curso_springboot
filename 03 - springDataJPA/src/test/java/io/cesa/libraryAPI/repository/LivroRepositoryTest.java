@@ -134,10 +134,33 @@ class LivroRepositoryTest {
   void pesquisaPorTituloEPrecoTest(){
     var preco = BigDecimal.valueOf(204.00);
     String tituloPesquisa = "O roubo da casa assombrada";
-    
+
     List<Livro> lista = repository.findByTituloAndPreco(tituloPesquisa, preco );
     lista.forEach(System.out::println);
   }
-  
+
+  @Test
+  void listarLivrosComQueryJPQL(){
+     var resultado = repository.listarTodosOrdenadoPorTituloAndPreco();
+     resultado.forEach(System.out::println);
+  }
+
+  @Test
+  void listarAutoresDosLivros(){
+    var resultado = repository.listarAutoresDosLivros();
+    resultado.forEach(System.out::println);
+  }
+
+  @Test
+  void listarTitulosNaoRepetidosDosLivros(){
+    var resultado = repository.listarAutoresDosLivros();
+    resultado.forEach(System.out::println);
+  }
+
+  @Test
+  void listarGenerosDeLivrosAutoresBrasileiros(){
+    var resultado = repository.listarGenerosAutoresBrasileiros();
+    resultado.forEach(System.out::println);
+  }
   
 }

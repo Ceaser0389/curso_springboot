@@ -36,3 +36,7 @@ drop table autor;
 SELECT  l.titulo as nome_livro , a.nome as nome_autor
 from livro l
 join autor a on a.id = l.id_autor
+
+SELECT *
+from livro
+where titulo like 'o roubo da casa assombrada'
