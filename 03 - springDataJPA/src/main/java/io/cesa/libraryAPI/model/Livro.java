@@ -2,6 +2,7 @@ package io.cesa.libraryAPI.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,8 +11,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "livro")
 @Data
-
-
+@ToString(exclude = "autor")
 public class Livro {
   
   @Id
@@ -35,7 +35,10 @@ public class Livro {
   @Column(name = "preco", precision = 18 , scale = 2)
   private BigDecimal preco;
   
-  @ManyToOne
+  @ManyToOne(
+     // cascade = CascadeType.ALL//  fetch = FetchType.EAGER
+     fetch = FetchType.LAZY // traz  apenas os dados do livro
+     )
   @JoinColumn(name = "id_autor")
   private Autor autor;
   

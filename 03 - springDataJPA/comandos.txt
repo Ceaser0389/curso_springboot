@@ -19,7 +19,7 @@ create table livro(
   genero varchar(30) not null,
   preco numeric (18,2),
   id_autor uuid not null references autor(id),
-  constraint chk_genero  CHECK( genero in ('FICCAO','FANTASIA','ROMANCE',
+  constraint chk_genero  CHECK( genero in ('FICCAO','FANTASIA','ROMANCE',MISTERIO,
   'BIOGRAFIA','CIENCIA'))
 );
 
@@ -29,3 +29,10 @@ select * from livro ;
 
 drop table livro;
 drop table autor;
+
+
+
+
+SELECT  l.titulo as nome_livro , a.nome as nome_autor
+from livro l
+join autor a on a.id = l.id_autor
