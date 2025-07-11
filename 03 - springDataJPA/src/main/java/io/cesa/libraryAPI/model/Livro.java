@@ -38,6 +38,7 @@ public class Livro {
   @ManyToOne(
      // cascade = CascadeType.ALL//  fetch = FetchType.EAGER
      fetch = FetchType.LAZY // traz  apenas os dados do livro
+
      )
   @JoinColumn(name = "id_autor")
   private Autor autor;
