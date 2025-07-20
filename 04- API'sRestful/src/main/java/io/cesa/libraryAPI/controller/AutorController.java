@@ -1,6 +1,9 @@
 package io.cesa.libraryAPI.controller;
 
 import io.cesa.libraryAPI.controller.dto.AutorDTO;
+import io.cesa.libraryAPI.controller.dto.ErroResposta;
+import io.cesa.libraryAPI.exceptions.OperacaoNaoPermitidaException;
+import io.cesa.libraryAPI.exceptions.RegistroDuplicadoException;
 import io.cesa.libraryAPI.model.Autor;
 import io.cesa.libraryAPI.service.AutorService;
 import org.springframework.http.HttpStatus;
@@ -27,22 +30,27 @@ public class AutorController {
 
     @PostMapping
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Void> salvar(@RequestBody AutorDTO autor){
-        var autorEntidade = autor.mapearParaAutor();
-        service.salvar(autorEntidade);
+    public ResponseEntity<Object> salvar(@RequestBody AutorDTO autor){
+        try {
+            var autorEntidade = autor.mapearParaAutor();
+            service.salvar(autorEntidade);
 
-        /**
-         *  classe que cria uma URI, ela pega os dados da requsição atuação e cria uma
-         *  nova URL
-         *  http://localhost:8080/autores , ela pega url e add um id para esta entidade
-         * @
-         */
-        URI location = ServletUriComponentsBuilder
-            .fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(autorEntidade.getId())
-            .toUri();
-        return  ResponseEntity.created(location).build();
+            /**
+             *  classe que cria uma URI, ela pega os dados da requsição atuação e cria uma
+             *  nova URL
+             *  http://localhost:8080/autores , ela pega url e add um id para esta entidade
+             * @
+             */
+            URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(autorEntidade.getId())
+                .toUri();
+            return  ResponseEntity.created(location).build();
+        } catch ( RegistroDuplicadoException e) {
+            var erroDTO = ErroResposta.conflito(e.getMessage());
+            return  ResponseEntity.status(erroDTO.status()).body(erroDTO);
+        }
     }
 
     @GetMapping("{id}")
@@ -61,23 +69,29 @@ public class AutorController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deletar(@PathVariable("id") String id){
-        var idAutor = UUID.fromString(id);
-        Optional<Autor> autorOptional = service.obterPorId(idAutor);
+    public ResponseEntity<Object> deletar(@PathVariable("id") String id){
+        try {
+            var idAutor = UUID.fromString(id);
+            Optional<Autor> autorOptional = service.obterPorId(idAutor);
 
-        if (autorOptional.isEmpty()){
-            return  ResponseEntity.notFound().build();
+            if (autorOptional.isEmpty()){
+                return  ResponseEntity.notFound().build();
+            }
+
+            service.deletar(autorOptional.get());
+
+            return  ResponseEntity.noContent().build();
+        } catch (OperacaoNaoPermitidaException e) {
+             var erroResposta = ErroResposta.respostaPadrao(e.getMessage());
+             return ResponseEntity.status(erroResposta.status()).body(erroResposta);
         }
-
-        service.deletar(autorOptional.get());
-
-        return  ResponseEntity.noContent().build();
     }
 
     @GetMapping
     public ResponseEntity<List<AutorDTO>> pesquisar(
        @RequestParam(value = "nome", required = false) String nome,
        @RequestParam( value = "nacionalidade", required = false) String nacionalidade){
+
        List<Autor> resultado =  service.pesquisa(nome, nacionalidade);
        List<AutorDTO> lista =  resultado
            .stream()
@@ -91,7 +105,31 @@ public class AutorController {
        return  ResponseEntity.ok(lista);
     }
 
+    @PutMapping("{id}")
+    public ResponseEntity<Object>atualizar(
+        @PathVariable("id") String id , @RequestBody AutorDTO dto){
 
+        try {
+            var idAutor = UUID.fromString(id);
+            Optional<Autor> autorOptional = service.obterPorId(idAutor);
+
+            if (autorOptional.isEmpty()){
+                return  ResponseEntity.notFound().build();
+            }
+
+            var autor = autorOptional.get();
+            autor.setNome(dto.nome());
+            autor.setNacionalidade(dto.nacionalidade());
+            autor.setDataNascimento(dto.dataNascimento());
+
+            service.atualizar(autor);
+
+            return ResponseEntity.noContent().build();
+        } catch (RegistroDuplicadoException e) {
+            var erroDTO = ErroResposta.conflito(e.getMessage());
+            return  ResponseEntity.status(erroDTO.status()).body(erroDTO);
+        }
+    }
 
 }
 

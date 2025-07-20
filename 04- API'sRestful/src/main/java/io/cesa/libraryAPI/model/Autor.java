@@ -22,34 +22,36 @@ import java.util.UUID;
 /** ele vai observar as operações da class geriras anotations data e
  hora */
 public class Autor {
-  
+
   @Id
   @Column(name = "id")
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
-  
+
   @Column(name = "nome", length = 100, nullable = false)
   private String nome;
-  
+
   @Column(name = "data_nascimento", nullable = false)
   private LocalDate dataNascimento;
-  
-  @Column(name = "nacionalidade",length = 50, nullable = false)
+
+  @Column(name = "nacionalidade", length = 50, nullable = false)
   private String nacionalidade;
-  
-  @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+
+  @OneToMany(mappedBy = "autor", fetch = FetchType.LAZY
+//            , cascade = CascadeType.ALL
+  )
   private List<Livro> livros;
 
-  @CreatedDate  // coloca a data atual
+  @CreatedDate
   @Column(name = "data_cadastro")
   private LocalDateTime dataCadastro;
 
-  @LastModifiedDate // atualiza com data atual no update
+  @LastModifiedDate
   @Column(name = "data_atualizacao")
   private LocalDateTime dataAtualizacao;
 
-  @Column(name = "id_usuario")
-  private  UUID idUsuario;
 
-  
+
+
+
 }
