@@ -1,0 +1,46 @@
+
+create table autor(
+  id uuid not null PRIMARY key,
+  nome varchar(100) not null,
+  data_nascimento date not null,
+  nacionalidade varchar(50) not null
+  data_cadastro timestamp,
+  data_atualizacao timestamp,
+  id_usuario uuid
+);
+
+select * from autor;
+
+
+create table livro(
+  id uuid not null primary key,
+  isbn varchar(20) NOT null,
+  titulo varchar(150) not null,
+  data_publicacao date not null,
+  genero varchar(30) not null,
+  preco numeric (18,2),
+  data_cadastro timestamp,
+  data_atualizacao timestamp,
+  id_usuario uuid,
+  id_autor uuid not null references autor(id),
+  constraint chk_genero  CHECK( genero in ('FICCAO','FANTASIA','ROMANCE','MISTERIO',
+  'BIOGRAFIA','CIENCIA'))
+);
+
+
+select * from livro ;
+
+
+drop table livro;
+drop table autor;
+
+
+
+
+SELECT  l.titulo as nome_livro , a.nome as nome_autor
+from livro l
+join autor a on a.id = l.id_autor
+
+SELECT *
+from livro
+where titulo like 'o roubo da casa assombrada'

@@ -6,7 +6,8 @@ import io.cesa.libraryAPI.exceptions.OperacaoNaoPermitidaException;
 import io.cesa.libraryAPI.exceptions.RegistroDuplicadoException;
 import io.cesa.libraryAPI.model.Autor;
 import io.cesa.libraryAPI.service.AutorService;
-import lombok.RequiredArgsConstructor;
+
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,19 +21,18 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("autores")
-@RequiredArgsConstructor
 // http://localhost:8080/autores
 public class AutorController {
 
     private final AutorService service;
 
-//    public AutorController(AutorService service){
-//        this.service = service;
-//    }
+    public AutorController(AutorService service){
+        this.service = service;
+    }
 
     @PostMapping
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Object> salvar(@RequestBody AutorDTO autor){
+    public ResponseEntity<Object> salvar(@RequestBody  @Valid AutorDTO autor){ //@valid pega os err vali
         try {
             var autorEntidade = autor.mapearParaAutor();
             service.salvar(autorEntidade);
@@ -94,7 +94,7 @@ public class AutorController {
        @RequestParam(value = "nome", required = false) String nome,
        @RequestParam( value = "nacionalidade", required = false) String nacionalidade){
 
-       List<Autor> resultado =  service.pesquisa(nome, nacionalidade);
+       List<Autor> resultado =  service.pesquisaByExample(nome, nacionalidade);
        List<AutorDTO> lista =  resultado
            .stream()
            .map(autor -> new AutorDTO(
@@ -109,7 +109,7 @@ public class AutorController {
 
     @PutMapping("{id}")
     public ResponseEntity<Object>atualizar(
-        @PathVariable("id") String id , @RequestBody AutorDTO dto){
+        @PathVariable("id") String id , @RequestBody  @Valid AutorDTO dto){
 
         try {
             var idAutor = UUID.fromString(id);
